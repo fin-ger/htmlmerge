@@ -41,7 +41,7 @@ class colors:
     purple_b = '\033[1;35m'
     cyan_b   = '\033[1;36m'
     white_b  = '\033[1;37m'
-    endc   = '\033[0m'
+    endc     = '\033[0m'
 # end colors
 
 ERROR   = True
