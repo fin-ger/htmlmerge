@@ -108,8 +108,7 @@ parser.add_argument ("-o", "--output",
                      dest    = "outfile",
                      default = "merged.html",
                      help    = "set output html file (default: %(default)s)\n" +
-                               "use '-o -' to pipe the output to " +
-                               "another program"
+                               "use '-o -' to pipe output to another program"
 )
 
 parser.add_argument ("-l", "--loglevel",
