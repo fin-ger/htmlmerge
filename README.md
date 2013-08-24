@@ -54,6 +54,9 @@ needed for all devices. The generated *merged* html will be written to the given
 output file. If there is no output file given the script will save to
 `merged.html`.
 
+### Todo ###
+* convert small graphics to base64 string
+
 ### Author ###
 Fin Christensen
 
