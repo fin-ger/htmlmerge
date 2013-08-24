@@ -66,28 +66,31 @@ def error (s):
 
 def warn (s):
     if WARNING:
-        print "%s * WARNING: %s%s%s" % (
+        msg = "%s * WARNING: %s%s%s\n" % (
             colors.yellow_b, colors.white_b, s, colors.endc
         )
-        # end if
+        sys.stderr.write(''.join(map(str,msg)))
+    # end if
 # end warning
 
 def info (s):
     if INFO:
-        print "%s * %s%s" % (colors.green_b, colors.endc, s)
+        msg = "%s * %s%s\n" % (colors.green_b, colors.endc, s)
+        sys.stderr.write(''.join(map(str,msg)))
     # end if
 # end info
 
 def debug (s):
     if DEBUG:
-        print "%s * DEBUG: %s%s" % (colors.cyan_b, colors.endc, s)
+        msg = "%s * DEBUG: %s%s\n" % (colors.cyan_b, colors.endc, s)
+        sys.stderr.write(''.join(map(str,msg)))
     # end if
 # end debug
 
 
 parser = argparse.ArgumentParser (
     version         = "%(prog)s 0.1 Alpha",
-    formatter_class = argparse.RawDescriptionHelpFormatter,
+    formatter_class = argparse.RawTextHelpFormatter,
     description     = "Merge all linked css and javascript resources of an " +
                       "html file into one file",
     epilog          = "examples:\n" +
@@ -104,7 +107,9 @@ parser.add_argument ("-o", "--output",
                      metavar = "FILE",
                      dest    = "outfile",
                      default = "merged.html",
-                     help    = "set output html file (default: %(default)s)"
+                     help    = "set output html file (default: %(default)s)\n" +
+                               "use \033[1m-o -\033[0m to pipe the output to " +
+                               "another program"
 )
 
 parser.add_argument ("-l", "--loglevel",
@@ -295,12 +300,17 @@ head = dom.find ('head')
 head.insert ( len (head.contents), style_tag )
 
 
-info ("Writing merged html file to \"" + outfile + "\" ...")
+if outfile == "-":
+    info ("Piping merged html file ...")
+    print dom.prettify ("utf-8")
+else:
+    info ("Writing merged html file to \"" + outfile + "\" ...")
 
-try:
-    with open (outfile,'w') as f:
-        f.write ( dom.prettify ("utf-8") )
-except:
-    error ("Failed to save \"" + outfile + "\" ! Do we have permission?")
-    sys.exit(1)
-# end try
+    try:
+        with open (outfile,'w') as f:
+            f.write ( dom.prettify ("utf-8") )
+    except:
+        error ("Failed to save \"" + outfile + "\" ! Do we have permission?")
+        sys.exit(1)
+    # end try
+# end if

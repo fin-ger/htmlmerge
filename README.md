@@ -24,18 +24,21 @@ Make sure `~/bin/` is in your `$PATH` variable.
 
 ### Usage ###
     htmlmerge [-h] [-v] [-o FILE] [-l VAL] infile
-
+    
+    Merge all linked css and javascript resources of an html file into one file
+    
     positional arguments:
       infile                set input html file
-
+    
     optional arguments:
       -h, --help            show this help message and exit
       -v, --version         show program's version number and exit
       -o FILE, --output FILE
                             set output html file (default: merged.html)
+                            use `-o -` to pipe the output to another program
       -l VAL, --loglevel VAL
                             set logging level [quiet|error|warning|*info|debug]
-
+    
     examples:
       htmlmerge index.html
       htmlmerge index.html -o build/out.html
