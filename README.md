@@ -2,12 +2,11 @@ htmlmerge
 =========
 
 __HTML, CSS and Javascript merging tool__
+
 Merge all linked _css_ and javascript resources of an html file into a single
 file
 
 ### Requirements ###
-To run this script you need
-
 * `Python 2.7`
 * `BeautifulSoup v3` python library
 
@@ -54,7 +53,9 @@ not output file given the script will write it to `merged.html`.
 Fin Christensen
 
 __License__
+
 *Have a look into `LICENSE`* [MIT]
 
 __Copyright__
+
 Copyright &copy; Fin Christensen 2013 - All rights reserved!
