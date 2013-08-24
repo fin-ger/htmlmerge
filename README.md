@@ -52,7 +52,7 @@ not output file given the script will write it to `merged.html`.
 Fin Christensen
 
 __License__  
-*Have a look into `LICENSE`* [MIT]
+*Have a look into `LICENSE`* `MIT`
 
 __Copyright__  
 Copyright &copy; Fin Christensen 2013 - All rights reserved!
