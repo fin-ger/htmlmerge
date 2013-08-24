@@ -1,0 +1,252 @@
+#! /usr/bin/python
+
+
+# TODO: @import in css
+
+import sys
+import os
+import re
+import argparse
+
+from BeautifulSoup import BeautifulSoup, Tag
+
+
+
+# coloured output
+class colors:
+    black    = '\033[0;30m'
+    red      = '\033[0;31m'
+    green    = '\033[0;32m'
+    yellow   = '\033[0;33m'
+    blue     = '\033[0;34m'
+    purple   = '\033[0;35m'
+    cyan     = '\033[0;36m'
+    white    = '\033[0;37m'
+    black_b  = '\033[1;30m'
+    red_b    = '\033[1;31m'
+    green_b  = '\033[1;32m'
+    yellow_b = '\033[1;33m'
+    blue_b   = '\033[1;34m'
+    purple_b = '\033[1;35m'
+    cyan_b   = '\033[1;36m'
+    white_b  = '\033[1;37m'
+    endc   = '\033[0m'
+# end colors
+
+ERROR   = True
+WARNING = True
+INFO    = True
+DEBUG   = True
+
+# console output methods
+def error (s):
+    if ERROR:
+        msg = "%s * ERROR: %s%s%s\n" % (
+            colors.red_b, colors.white_b, s, colors.endc
+        )
+        sys.stderr.write(''.join(map(str,msg)))
+    # end if
+# end error
+
+def warn (s):
+    if WARNING:
+        print "%s * WARNING: %s%s%s" % (
+            colors.yellow_b, colors.white_b, s, colors.endc
+        )
+        # end if
+# end warning
+
+def info (s):
+    if INFO:
+        print "%s * %s%s" % (colors.green_b, colors.endc, s)
+    # end if
+# end info
+
+def debug (s):
+    if DEBUG:
+        print "%s * DEBUG: %s%s" % (colors.cyan_b, colors.endc, s)
+    # end if
+# end debug
+
+
+
+parser = argparse.ArgumentParser (version="%(prog)s 0.1 Alpha",
+                                  formatter_class=
+                                  argparse.RawDescriptionHelpFormatter,
+                                  description="Merge all linked css and " +
+                                  "javascript resources into one html file",
+                                  epilog="examples:\n" +
+                                  "  %(prog)s index.html\n"
+                                  "  %(prog)s index.html -o build/out.html\n"
+                                  "  %(prog)s --loglevel quiet index.html\n\n"
+                                  "Copyright (c) Fin Christensen 2013 - " +
+                                  "All rights reserved!")
+
+parser.add_argument ("infile",
+                     help="set input html file")
+
+parser.add_argument ("-o", "--output", metavar="FILE", dest="outfile",
+                     default="merged.html",
+                     help="set output html file (default: %(default)s)")
+
+parser.add_argument ("-l", "--loglevel", metavar="VAL", dest="LOGLEVEL",
+                     default="info",
+                     help="set logging level [quiet|error|warning|*info|debug]")
+
+args = parser.parse_args()
+
+infile  = args.infile		# get input file from command line argument
+outfile = args.outfile		# get output file from command line argument
+
+# get logging level
+LOGLEVEL = args.LOGLEVEL
+
+if not LOGLEVEL in "debug,info,warning,error,quiet":
+    warn (LOGLEVEL + " is not a valid logging level! Using default (info) ...")
+    LOGLEVEL = "info"
+
+DEBUG    = True if LOGLEVEL == 'debug'              else False
+INFO     = True if LOGLEVEL == 'info'    or DEBUG   else False
+WARNING  = True if LOGLEVEL == 'warning' or INFO    else False
+ERROR    = True if LOGLEVEL == 'error'   or WARNING else False
+
+
+
+debug ("Project will be merged to \"" + outfile + "\"!")
+
+
+debug ("Reading \"" + infile + "\" ...")
+
+# read input file to indexHTML
+try:
+    with open (infile,'r') as f:
+        indexHTML = f.read()
+except:
+    error ("Could not open \"" + infile + "\" !")
+    sys.exit(1)
+
+
+debug ("Translating \"" + infile + "\" to python data structure ...")
+
+# translate indexHTML string to python data structure
+dom = BeautifulSoup ( indexHTML )
+
+
+debug ("Searching for script tags in html ...")
+
+# find all script tags in html
+scripts = dom.findAll ('script')
+
+all_scripts = ""	# string containing merged scripts
+
+# iterate over script tags
+for tag in scripts:
+    # get src url of script tag
+    if tag.has_key ("src"):
+        src_url = tag['src']
+    else:
+        all_scripts += ''.join (tag.contents)
+        continue
+
+
+    info ("Found extern script: \"" + src_url + "\"")
+
+    # read src to src
+    with open (src_url,'r') as f:
+        all_scripts += f.read()
+
+    # remove src attribute
+    tag.extract()
+# end for
+
+
+debug ("Creating new script tag ...")
+
+# create script tag for all scripts
+scripts_tag = Tag (dom, "script")
+
+# inset merged scripts into new script tag
+scripts_tag.insert (0, all_scripts)
+
+# get head tag
+head = dom.find ('head')
+# append scripts tag to head
+head.insert ( len (head.contents), scripts_tag )
+
+
+
+debug ("Searching for link tags in html ...")
+
+# find all link tags in html
+links = dom.findAll ('link')
+
+all_css = ""	# string containing merged stylesheets
+
+# iterate over link tags
+for tag in links:
+    # get content of rel attribute
+    if tag.has_key ("rel"):
+        rel = tag['rel']
+
+        if rel == "stylesheet" and tag.has_key ("href"):
+            # get href url of link tag
+            src_url = tag['href']
+
+            info ("Found extern css: \"" + src_url + "\"")
+
+            # read src to src
+            with open (src_url,'r') as f:
+                all_css += f.read()
+
+            # remove src attribute
+            tag.extract()
+
+        else:
+            continue
+    else:
+        continue
+
+# end for
+
+debug ("Searching for style tags in html ...")
+
+# find all style tags in html
+styles = dom.findAll ('style')
+
+# iterate over style tags
+for tag in styles:
+    all_css += ''.join (tag.contents)
+# end for
+
+
+while "@import" in all_css:
+    all_css.split("\n")
+
+    for line in all_css:
+        if "@import" in line:
+            print line
+    all_css = ''.join (all_css)
+
+
+debug ("Creating new style tag ...")
+
+# create style tag for all css files
+style_tag = Tag (dom, "style")
+
+# inset merged css into new style tag
+style_tag.insert (0, all_css)
+
+# get head tag
+head = dom.find ('head')
+# append scripts tag to head
+head.insert ( len (head.contents), style_tag )
+
+
+info ("Writing merged html file to \"" + outfile + "\" ...")
+
+try:
+    with open (outfile,'w') as f:
+        f.write ( dom.prettify ("utf-8") )
+except:
+    error ("Failed to save \"" + outfile + "\" ! Do we have permissions?")
+    sys.exit(1)
