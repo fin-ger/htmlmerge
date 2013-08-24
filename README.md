@@ -48,6 +48,9 @@ one single `script` tag and all stylesheets into one single `style` tag. The
 generated *merged* html will be written to the given output file. If there is
 not output file given the script will write it to `merged.html`.
 
+### Todo ###
+* merge stylesheets linked with `@import`
+
 ### Author ###
 Fin Christensen
 
