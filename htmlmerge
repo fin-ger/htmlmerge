@@ -15,6 +15,11 @@ __status__     = "Prototype"
 
 # TODO: @import in css
 
+#
+# code width: 80 ------------------------------------------------------------->|
+#
+
+
 import sys
 import os
 import re
@@ -171,8 +176,14 @@ for tag in scripts:
     info ("Found external script: \"" + src_url + "\"")
 
     # read src to src
-    with open (src_url,'r') as f:
-        all_scripts += f.read()
+    try:
+        with open (src_url,'r') as f:
+            all_scripts += f.read()
+    except:
+        error ("Could not open \"" + src_url + "\" !")
+        sys.exit(1)
+    # end try
+
 
     # remove src attribute
     tag.extract()
@@ -211,11 +222,16 @@ for tag in links:
             # get href url of link tag
             src_url = tag['href']
 
-            info ("Found external css: \"" + src_url + "\"")
+            info ("Found external css   : \"" + src_url + "\"")
 
             # read src to src
-            with open (src_url,'r') as f:
-                all_css += f.read()
+            try:
+                with open (src_url,'r') as f:
+                    all_css += f.read()
+            except:
+                error ("Could not open \"" + src_url + "\" !")
+                sys.exit(1)
+            # end try
 
             # remove src attribute
             tag.extract()
@@ -236,13 +252,32 @@ for tag in styles:
 # end for
 
 
-while "@import" in all_css:
-    all_css.split("\n")
+# search for @import url(*);
+re_url = re.compile (r"@import\s+url\(['\"]?(.+?)['\"]?\);")
 
+# while mergable @import exist
+while re_url.search (all_css):
+    all_css = all_css.split ("\n")
     for line in all_css:
-        if "@import" in line:
-            print line
-    all_css = ''.join (all_css)
+        if len (re_url.findall (line)) > 0:
+            src_url = re_url.findall (line)[0]	# get src url
+
+            info ("Found external css   : \"" + src_url + "\"")
+
+            idx = all_css.index (line)		# get @import index
+            all_css.pop (idx)			# remove @import
+
+            # read src to src
+            try:
+                with open (src_url,'r') as f:
+                    # insert loaded css at old @import index
+                    all_css.insert (idx, f.read())
+            except:
+                error ("Could not open \"" + src_url + "\" !")
+                sys.exit(1)
+            # end try
+        # end if
+    all_css = '\n'.join (all_css)
 # end while
 
 
