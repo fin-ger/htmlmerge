@@ -35,7 +35,7 @@ Make sure `~/bin/` is in your `$PATH` variable.
       -v, --version         show program's version number and exit
       -o FILE, --output FILE
                             set output html file (default: merged.html)
-                            use '-o -' to pipe the output to another program
+                            use '-o -' to pipe output to another program
       -l VAL, --loglevel VAL
                             set logging level [quiet|error|warning|*info|debug]
     
