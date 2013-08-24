@@ -168,7 +168,7 @@ for tag in scripts:
         continue
     # end if
 
-    info ("Found extern script: \"" + src_url + "\"")
+    info ("Found external script: \"" + src_url + "\"")
 
     # read src to src
     with open (src_url,'r') as f:
@@ -211,7 +211,7 @@ for tag in links:
             # get href url of link tag
             src_url = tag['href']
 
-            info ("Found extern css: \"" + src_url + "\"")
+            info ("Found external css: \"" + src_url + "\"")
 
             # read src to src
             with open (src_url,'r') as f:
@@ -266,6 +266,6 @@ try:
     with open (outfile,'w') as f:
         f.write ( dom.prettify ("utf-8") )
 except:
-    error ("Failed to save \"" + outfile + "\" ! Do we have permissions?")
+    error ("Failed to save \"" + outfile + "\" ! Do we have permission?")
     sys.exit(1)
 # end try
