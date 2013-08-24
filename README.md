@@ -2,8 +2,8 @@ htmlmerge
 =========
 
 __HTML, CSS and Javascript merging tool__  
-Merge all linked _css_ and javascript resources of an html file into a single
-file
+Merge all linked _css_ and _javascript_ resources of an _html_ file into a
+single file.
 
 ### Requirements ###
 * `Python 2.7`
