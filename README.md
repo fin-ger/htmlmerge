@@ -44,12 +44,12 @@ Make sure `~/bin/` is in your `$PATH` variable.
 ### How It Works ###
 This script searches for `link`, `style` and `script` tags in the given html
 file and looks for `src` or `href` attributes. It will write all scripts into
-one single `script` tag and all stylesheets into one single `style` tag. The
-generated *merged* html will be written to the given output file. If there is
-not output file given the script will write it to `merged.html`.
-
-### Todo ###
-* merge stylesheets linked with `@import`
+one single `script` tag and all stylesheets into one single `style` tag.
+Stylesheets linked via `@import` will be merged, too. If a media query is given
+with `@import` the scripts skips the import because this stylesheet is not
+needed for all devices. The generated *merged* html will be written to the given
+output file. If there is not output file given the script will write it to
+`merged.html`.
 
 ### Author ###
 Fin Christensen
