@@ -11,7 +11,6 @@ import argparse
 from BeautifulSoup import BeautifulSoup, Tag
 
 
-
 # coloured output
 class colors:
     black    = '\033[0;30m'
@@ -69,29 +68,35 @@ def debug (s):
 # end debug
 
 
-
-parser = argparse.ArgumentParser (version="%(prog)s 0.1 Alpha",
-                                  formatter_class=
-                                  argparse.RawDescriptionHelpFormatter,
-                                  description="Merge all linked css and " +
-                                  "javascript resources into one html file",
-                                  epilog="examples:\n" +
-                                  "  %(prog)s index.html\n"
-                                  "  %(prog)s index.html -o build/out.html\n"
-                                  "  %(prog)s --loglevel quiet index.html\n\n"
-                                  "Copyright (c) Fin Christensen 2013 - " +
-                                  "All rights reserved!")
+parser = argparse.ArgumentParser (
+    version         = "%(prog)s 0.1 Alpha",
+    formatter_class = argparse.RawDescriptionHelpFormatter,
+    description     = "Merge all linked css and javascript resources into " +
+                      "one html file",
+    epilog          = "examples:\n" +
+    "  %(prog)s index.html\n"
+    "  %(prog)s index.html -o build/out.html\n"
+    "  %(prog)s --loglevel quiet index.html\n\n"
+    "Copyright (c) Fin Christensen 2013 - All rights reserved!"
+)
 
 parser.add_argument ("infile",
-                     help="set input html file")
+                     help = "set input html file")
 
-parser.add_argument ("-o", "--output", metavar="FILE", dest="outfile",
-                     default="merged.html",
-                     help="set output html file (default: %(default)s)")
+parser.add_argument ("-o", "--output",
+                     metavar = "FILE",
+                     dest    = "outfile",
+                     default = "merged.html",
+                     help    = "set output html file (default: %(default)s)"
+)
 
-parser.add_argument ("-l", "--loglevel", metavar="VAL", dest="LOGLEVEL",
-                     default="info",
-                     help="set logging level [quiet|error|warning|*info|debug]")
+parser.add_argument ("-l", "--loglevel",
+                     metavar = "VAL",
+                     dest    = "LOGLEVEL",
+                     default = "info",
+                     help    = "set logging level " +
+                               "[quiet|error|warning|*info|debug]"
+)
 
 args = parser.parse_args()
 
@@ -124,7 +129,7 @@ try:
 except:
     error ("Could not open \"" + infile + "\" !")
     sys.exit(1)
-
+# end try
 
 debug ("Translating \"" + infile + "\" to python data structure ...")
 
@@ -137,17 +142,19 @@ debug ("Searching for script tags in html ...")
 # find all script tags in html
 scripts = dom.findAll ('script')
 
-all_scripts = ""	# string containing merged scripts
+# string containing merged scripts
+all_scripts = ""
 
 # iterate over script tags
 for tag in scripts:
     # get src url of script tag
     if tag.has_key ("src"):
-        src_url = tag['src']
+        src_url = tag['src']			# save source url to variable
     else:
-        all_scripts += ''.join (tag.contents)
+        all_scripts += ''.join (tag.contents)	# append content of script tag
+        					# to string
         continue
-
+    # end if
 
     info ("Found extern script: \"" + src_url + "\"")
 
@@ -159,7 +166,6 @@ for tag in scripts:
     tag.extract()
 # end for
 
-
 debug ("Creating new script tag ...")
 
 # create script tag for all scripts
@@ -170,9 +176,9 @@ scripts_tag.insert (0, all_scripts)
 
 # get head tag
 head = dom.find ('head')
+
 # append scripts tag to head
 head.insert ( len (head.contents), scripts_tag )
-
 
 
 debug ("Searching for link tags in html ...")
@@ -180,7 +186,8 @@ debug ("Searching for link tags in html ...")
 # find all link tags in html
 links = dom.findAll ('link')
 
-all_css = ""	# string containing merged stylesheets
+# string containing merged stylesheets
+all_css = ""
 
 # iterate over link tags
 for tag in links:
@@ -200,12 +207,10 @@ for tag in links:
 
             # remove src attribute
             tag.extract()
-
         else:
             continue
     else:
         continue
-
 # end for
 
 debug ("Searching for style tags in html ...")
@@ -226,6 +231,7 @@ while "@import" in all_css:
         if "@import" in line:
             print line
     all_css = ''.join (all_css)
+# end while
 
 
 debug ("Creating new style tag ...")
@@ -250,3 +256,4 @@ try:
 except:
     error ("Failed to save \"" + outfile + "\" ! Do we have permissions?")
     sys.exit(1)
+# end try
