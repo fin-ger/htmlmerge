@@ -48,7 +48,7 @@ one single `script` tag and all stylesheets into one single `style` tag.
 Stylesheets linked via `@import` will be merged, too. If a media query is given
 with `@import` the scripts skips the import because this stylesheet is not
 needed for all devices. The generated *merged* html will be written to the given
-output file. If there is not output file given the script will write it to
+output file. If there is no output file given the script will save to
 `merged.html`.
 
 ### Author ###
