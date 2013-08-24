@@ -1,8 +1,7 @@
 htmlmerge
 =========
 
-__HTML, CSS and Javascript merging tool__
-
+__HTML, CSS and Javascript merging tool__  
 Merge all linked _css_ and javascript resources of an html file into a single
 file
 
@@ -52,10 +51,8 @@ not output file given the script will write it to `merged.html`.
 ### Author ###
 Fin Christensen
 
-__License__
-
+__License__  
 *Have a look into `LICENSE`* [MIT]
 
-__Copyright__
-
+__Copyright__  
 Copyright &copy; Fin Christensen 2013 - All rights reserved!
