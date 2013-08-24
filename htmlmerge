@@ -92,10 +92,11 @@ parser = argparse.ArgumentParser (
     description     = "Merge all linked css and javascript resources of an " +
                       "html file into one file",
     epilog          = "examples:\n" +
-    "  %(prog)s index.html\n"
-    "  %(prog)s index.html -o build/out.html\n"
-    "  %(prog)s --loglevel quiet index.html\n\n"
-    "Copyright (c) Fin Christensen 2013 - All rights reserved!"
+    		      "  %(prog)s index.html\n"
+    		      "  %(prog)s index.html -o build/out.html\n"
+    		      "  %(prog)s --loglevel quiet index.html\n\n"
+    		      "Copyright (c) Fin Christensen 2013 - " +
+    		      "All rights reserved!"
 )
 
 parser.add_argument ("infile",
@@ -133,7 +134,6 @@ DEBUG    = True if LOGLEVEL == 'debug'              else False
 INFO     = True if LOGLEVEL == 'info'    or DEBUG   else False
 WARNING  = True if LOGLEVEL == 'warning' or INFO    else False
 ERROR    = True if LOGLEVEL == 'error'   or WARNING else False
-
 
 
 debug ("Project will be merged to \"" + outfile + "\"!")
@@ -185,7 +185,6 @@ for tag in scripts:
         error ("Could not open \"" + src_url + "\" !")
         sys.exit(1)
     # end try
-
 
     # remove src attribute
     tag.extract()
@@ -299,13 +298,13 @@ head.insert ( len (head.contents), style_tag )
 
 if outfile == "-":
     info ("Piping merged html file ...")
-    print dom.prettify ("utf-8")
+    print dom.prettify ("utf-8").replace ("/*!","/*")
 else:
     info ("Writing merged html file to \"" + outfile + "\" ...")
 
     try:
         with open (outfile,'w') as f:
-            f.write ( dom.prettify ("utf-8") )
+            f.write ( dom.prettify ("utf-8").replace ("/*!","/*") )
     except:
         error ("Failed to save \"" + outfile + "\" ! Do we have permission?")
         sys.exit(1)
