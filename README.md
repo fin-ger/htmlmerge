@@ -59,10 +59,10 @@ output file. If there is no output file given the script will save to
 * possibility to pipe output from another program to input of htmlmerge
 * possibility to compile javascript with yuicompressor or
   google-closure-compiler
-* possibility to generate compressed html output (uglified)
+* possibility to generate compressed html output (uglyfied)
 * possibility to gzip merged.html
-* possibility to merge @import's with a media query
-* possibility to to turn of merging css, css via @import or javascript
+* possibility to merge `@import`'s with a media query
+* possibility to to turn of merging css, css via `@import` or javascript
 
 ### Author ###
 Fin Christensen
