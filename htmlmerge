@@ -350,7 +350,7 @@ for f in files:
     yui_ver    = yui_ver_re[0] if len (yui_ver_re) > 0 else yui_ver
     ghc_ver_re = ghc_re.findall (f)
     ghc_ver    = ghc_ver_re[0] if len (ghc_ver_re) > 0 else ghc_ver
-
+# end for
 
 # get logging level
 LOGLEVEL = args.LOGLEVEL
@@ -358,6 +358,7 @@ LOGLEVEL = args.LOGLEVEL
 if not LOGLEVEL in ("debug","info","warning","error","quiet"):
     warn (LOGLEVEL + " is not a valid logging level! Using default (info) ...")
     LOGLEVEL = "info"
+# end if
 
 DEBUG    = True if LOGLEVEL == 'debug'              else False
 INFO     = True if LOGLEVEL == 'info'    or DEBUG   else False
