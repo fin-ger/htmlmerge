@@ -23,9 +23,9 @@ import os
 import re
 import argparse
 
-from subprocess    import Popen, PIPE
-from shlex         import split
-from BeautifulSoup import BeautifulSoup, Tag
+from subprocess import Popen, PIPE
+from shlex      import split
+from bs4        import BeautifulSoup
 
 
 # coloured output
@@ -91,7 +91,7 @@ def debug (s):
 # short help function
 class short_help (argparse.Action):
     def __call__ (self, parser, namespace, values, option_string=None):
-        print """Usage: htmlmerge infile [options] [-h|--help]
+        print ("""Usage: htmlmerge infile [options] [-h|--help]
 
 Merge all linked css and javascript resources of an html file into one file
 
@@ -133,7 +133,7 @@ present in the same directory as this script.
 For HTML compression, additional Google htmlcompressor jar file must be present
 in the same directory as this script.
 
-Copyright (c) Fin Christensen 2013 - All rights reserved!"""
+Copyright (c) Fin Christensen 2013 - All rights reserved!""")
         sys.exit()
     # end def
 # end class
@@ -374,7 +374,7 @@ debug ("Reading \"" + infile + "\" ...")
 # read input file to indexHTML
 if infile == "-":
     # read from stdin if input file is -
-    print sys.stdin.read()
+    print (sys.stdin.read())
 else:
     # read from input file
     try:
@@ -395,7 +395,7 @@ if merge_js:
     debug ("Searching for script tags in html ...")
 
     # find all script tags in html
-    scripts = dom.findAll ('script')
+    scripts = dom.find_all ('script')
 
     # string containing merged scripts
     all_scripts = ""
@@ -439,7 +439,7 @@ if merge_js:
             "java -jar " +
             os.path.dirname(os.path.realpath(__file__)) +
             "/yuicompressor-" + yui_ver + ".jar"
-            " --type js --line-break " + cmd_ln_brk + " " +
+            " --type js --line-break " + str (cmd_ln_brk) + " " +
             ("--numunge " if cmd_js_nomunge else "") +
             ("--preserve-semi " if cmd_js_preserve_semi else "") +
             ("--disable-optimizations " if cmd_js_disable_optimizations else "")
@@ -458,7 +458,7 @@ if merge_js:
     debug ("Creating new script tag ...")
 
     # create script tag for all scripts
-    scripts_tag = Tag (dom, "script")
+    scripts_tag = dom.new_tag ("script")
 
     # inset merged scripts into new script tag
     scripts_tag.insert (0, all_scripts)
@@ -475,7 +475,7 @@ if merge_css:
     debug ("Searching for link tags in html ...")
 
     # find all link tags in html
-    links = dom.findAll ('link')
+    links = dom.find_all ('link')
 
     # string containing merged stylesheets
     all_css = ""
@@ -484,7 +484,7 @@ if merge_css:
     for tag in links:
         # get content of rel attribute
         if tag.has_key ("rel"):
-            rel = tag['rel']
+            rel = " ".join (tag['rel'])
 
             if rel == "stylesheet" and tag.has_key ("href"):
                 # get href url of link tag
@@ -512,7 +512,7 @@ if merge_css:
     debug ("Searching for style tags in html ...")
 
     # find all style tags in html
-    styles = dom.findAll ('style')
+    styles = dom.find_all ('style')
 
     # iterate over style tags
     for tag in styles:
@@ -563,7 +563,7 @@ if merge_css:
             "java -jar " +
             os.path.dirname(os.path.realpath(__file__)) +
             "/yuicompressor-" + yui_ver + ".jar"
-            " --type css --line-break " + cmd_ln_brk
+            " --type css --line-break " + str (cmd_ln_brk)
         )
 
         # create process
@@ -579,7 +579,7 @@ if merge_css:
     debug ("Creating new style tag ...")
 
     # create style tag for all css files
-    style_tag = Tag (dom, "style")
+    style_tag = dom.new_tag ("style")
 
     # inset merged css into new style tag
     style_tag.insert (0, all_css)
@@ -590,7 +590,7 @@ if merge_css:
     head.insert ( len (head.contents), style_tag )
 # end if
 
-all_html = dom.prettify ("utf-8")
+all_html = dom.prettify ("utf-8", formatter=None)
 
 # compress html if requested
 if comp_html:
@@ -629,7 +629,7 @@ if gzip:
 
 if outfile == "-":
     info ("Piping merged data ...")
-    print all_html
+    print (all_html)
 else:
     info ("Writing merged data to \"" + outfile + "\" ...")
 

@@ -6,12 +6,15 @@ Merge all linked _css_ and _javascript_ resources of an _html_ file into a
 single file.
 
 ### Requirements ###
-* `Python 2.7`
-* `BeautifulSoup v3` python library
-* (optional) Google `htmlcompressor`
-* (optional) Yahoo `YUIcompressor`
+* `Python 3`
+* `BeautifulSoup v4` python library
+* (optional) Google
+  `(htmlcompressor)[http://code.google.com/p/htmlcompressor/downloads/list]`
+* (optional) Yahoo
+  `(YUIcompressor)[https://github.com/yui/yuicompressor/releases]`
 
-This script was tested on `Gentoo Linux` with `Python 2.7` and `BeautifulSoup3`.
+This script was tested on `Gentoo Linux` with `Python 3.2.5` and
+`BeautifulSoup4`.
 
 
 ### Install ###
