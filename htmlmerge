@@ -374,7 +374,7 @@ debug ("Reading \"" + infile + "\" ...")
 # read input file to indexHTML
 if infile == "-":
     # read from stdin if input file is -
-    print (sys.stdin.read())
+    indexHTML = sys.stdin.read()
 else:
     # read from input file
     try:
@@ -600,7 +600,7 @@ if comp_html:
     cmd = split (
         "java -jar " +
         os.path.dirname(os.path.realpath(__file__)) +
-        "/htmlcompressor-" + ghc_ver + ".jar"
+        "/htmlcompressor-" + ghc_ver + ".jar --remove-intertag-spaces"
     )
 
     # create process
