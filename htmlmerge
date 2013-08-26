@@ -6,7 +6,7 @@ __author__     = "Fin Christensen"
 __copyright__  = "Copyright (c) Fin Christensen 2013 - All rights reserved!"
 __credits__    = ["Fin Christensen"]
 __license__    = "MIT"
-__version__    = "0.1 Alpha"
+__version__    = "0.2"
 __date__       = "2013-08-24 T 17:06 UTC"
 __maintainer__ = "Fin Christensen"
 __email__      = "fin-ger@users.noreply.github.com"
@@ -184,7 +184,7 @@ opt_args.add_argument ("-l", "--long-help",
 )
 
 opt_args.add_argument ("-v", "--version",
-                       version = "%(prog)s 0.2",
+                       version = "%(prog)s v" + __version__,
                        action  = "version",
                        help    = "Show program's version number and exit"
 )
