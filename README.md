@@ -25,7 +25,7 @@ e.g.
 Make sure `~/bin/` is in your `$PATH` variable.
 
 ### Usage ###
-<pre><code>
+<code>
 htmlmerge infile [options] [-h|--help]
 
 Merge all linked css and javascript resources of an html file into one file
@@ -84,7 +84,7 @@ For HTML compression, additional Google htmlcompressor jar file must be present
 in the same directory as this script.
 
 Copyright (c) Fin Christensen 2013 - All rights reserved!
-</pre></code>
+</code>
 ### How It Works ###
 This script searches for `link`, `style` and `script` tags in the given html
 file and looks for `src` or `href` attributes. It will write all scripts into
