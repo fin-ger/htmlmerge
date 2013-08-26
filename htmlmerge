@@ -23,6 +23,8 @@ import os
 import re
 import argparse
 
+from subprocess    import Popen, PIPE
+from shlex         import split
 from BeautifulSoup import BeautifulSoup, Tag
 
 
@@ -86,47 +88,274 @@ def debug (s):
 # end debug
 
 
+# short help function
+class short_help (argparse.Action):
+    def __call__ (self, parser, namespace, values, option_string=None):
+        print """Usage: htmlmerge infile [options] [-h|--help]
+
+Merge all linked css and javascript resources of an html file into one file
+
+Required arguments:
+  infile                Set input html file
+                        Use '-' to read piped output from another program
+
+Optional arguments:
+  -h, --help            Show short help message and exit
+  --long-help           Show this help message and exit
+  -v, --version         Show program's version number and exit
+  -x, --compress-html   Compress html (Google htmlcompressor required)
+  -c, --compile-css     Compile stylesheets (YUIcompressor required)
+  -j, --compile-js      Compile javascript (YUIcompressor required)
+  -k, --no-css          Disable css merging
+  -r, --no-css-import   Disable css @import merging
+  -s, --no-js           Disable javascript merging
+  -u, --unlock-comments
+                        Unlock comments in javascript and css
+                        (e.g. /*! ... */ becomes /* ... */)
+  -o FILE, --output FILE
+                        Set output file (default: merged.html)
+                        If the file extension is .gzip the html will be gziped
+                        Use '-o -' to pipe output to another program
+  -g, --gzip            Force a gziped output. The file extension does not
+                        matter.
+                        This is useful if you would like to pipe gziped output
+  -l VAL, --loglevel VAL
+                        Set logging level [quiet|error|warning|info|debug]
+                        (default: info)
+
+Examples:
+  htmlmerge index.html
+  htmlmerge index.html -x -c -j -o build/out.html -u
+  htmlmerge index.html -x --loglevel quiet -k -r -s
+
+For CSS or JavaScript compression, additional YUIcompressor jar file must be
+present in the same directory as this script.
+For HTML compression, additional Google htmlcompressor jar file must be present
+in the same directory as this script.
+
+Copyright (c) Fin Christensen 2013 - All rights reserved!"""
+        sys.exit()
+    # end def
+# end class
+
 parser = argparse.ArgumentParser (
-    version         = "%(prog)s 0.1 Alpha",
+    add_help        = False,
+    usage           = "%(prog)s infile [options] [-h|--help]",
     formatter_class = argparse.RawTextHelpFormatter,
     description     = "Merge all linked css and javascript resources of an " +
                       "html file into one file",
-    epilog          = "examples:\n" +
-    		      "  %(prog)s index.html\n"
-    		      "  %(prog)s index.html -o build/out.html\n"
-    		      "  %(prog)s --loglevel quiet index.html\n\n"
+    epilog          = "Examples:\n" +
+    		      "  %(prog)s index.html\n" +
+    		      "  %(prog)s index.html -x -c -j -o build/out.html -u\n" +
+    		      "  %(prog)s index.html -x --loglevel quiet -k -r -s\n\n" +
+                      "For CSS or JavaScript compression, additional " +
+                      "YUIcompressor jar file must be\npresent in the same " +
+                      "directory as this script.\n" +
+                      "For HTML compression, additional Google " +
+                      "htmlcompressor jar file must be present\nin the same " +
+                      "directory as this script.\n\n" +
     		      "Copyright (c) Fin Christensen 2013 - " +
     		      "All rights reserved!"
 )
 
-parser.add_argument ("infile",
-                     help = "set input html file")
-
-parser.add_argument ("-o", "--output",
-                     metavar = "FILE",
-                     dest    = "outfile",
-                     default = "merged.html",
-                     help    = "set output html file (default: %(default)s)\n" +
-                               "use '-o -' to pipe output to another program"
+requ_args = parser.add_argument_group (
+    'Required arguments'
 )
 
-parser.add_argument ("-l", "--loglevel",
-                     metavar = "VAL",
-                     dest    = "LOGLEVEL",
-                     default = "info",
-                     help    = "set logging level " +
-                               "[quiet|error|warning|*info|debug]"
+requ_args.add_argument ("infile",
+                        help = "Set input html file\n" +
+                               "Use '-' to read piped output from another " +
+                               "program"
+)
+
+opt_args  = parser.add_argument_group (
+    'Optional arguments'
+)
+
+opt_args.add_argument ("-h", "--help",
+                       action  = short_help,
+                       nargs   = 0,
+                       help    = "Show short help message and exit"
+)
+
+opt_args.add_argument ("--long-help",
+                       action  = "help",
+                       help    = "Show this help message and exit"
+)
+
+opt_args.add_argument ("-v", "--version",
+                       version = "%(prog)s 0.2",
+                       action  = "version",
+                       help    = "Show program's version number and exit"
+)
+
+opt_args.add_argument ("-x", "--compress-html",
+                       dest    = "comp_html",
+                       action  = "store_true",
+                       default = False,
+                       help    = "Compress html "
+                                 "(Google htmlcompressor required)"
+)
+
+opt_args.add_argument ("-c", "--compile-css",
+                       dest    = "comp_css",
+                       action  = "store_true",
+                       default = False,
+                       help    = "Compile stylesheets "
+                                 "(YUIcompressor required)"
+)
+
+opt_args.add_argument ("-j", "--compile-js",
+                       dest    = "comp_js",
+                       action  = "store_true",
+                       default = False,
+                       help    = "Compile javascript "
+                                 "(YUIcompressor required)"
+)
+
+opt_args.add_argument ("-k", "--no-css",
+                       dest    = "merge_css",
+                       action  = "store_false",
+                       default = True,
+                       help    = "Disable css merging"
+)
+
+opt_args.add_argument ("-r", "--no-css-import",
+                       dest    = "merge_css_import",
+                       action  = "store_false",
+                       default = True,
+                       help    = "Disable css @import merging"
+)
+
+opt_args.add_argument ("-s", "--no-js",
+                       dest    = "merge_js",
+                       action  = "store_false",
+                       default = True,
+                       help    = "Disable javascript merging"
+)
+
+opt_args.add_argument ("-u", "--unlock-comments",
+                       dest    = "unlock_comments",
+                       action  = "store_true",
+                       default = False,
+                       help    = "Unlock comments in javascript and css\n" +
+                                 "(e.g. /*! ... */ becomes /* ... */)"
+)
+opt_args.add_argument ("-o", "--output",
+                       metavar = "FILE",
+                       dest    = "outfile",
+                       default = "merged.html",
+                       help    = "Set output file (default: %(default)s)\n" +
+                                 "If the file extension is .gzip the html " +
+                                 "will be gziped\n" +
+                                 "Use '-o -' to pipe output to another " +
+                                 "program"
+)
+
+opt_args.add_argument ("-g", "--gzip",
+                       dest    = "gzip",
+                       action  = "store_true",
+                       default = False,
+                       help    = "Force a gziped output. " +
+                                 "The file extension does not\nmatter.\n" +
+                                 "This is useful if you would like to pipe " +
+                                 "gziped output"
+)
+
+opt_args.add_argument ("-l", "--loglevel",
+                       metavar = "VAL",
+                       dest    = "LOGLEVEL",
+                       default = "info",
+                       help    = "Set logging level " +
+                                 "[quiet|error|warning|info|debug]\n"
+                                 "(default: %(default)s)"
+)
+
+yui_args   = parser.add_argument_group (
+    'Javascript and css compiler options',
+    'YUIcompressor'
+)
+
+yui_args.add_argument ("-w", "--line-break",
+                       metavar  = "COLUMN",
+                       dest     = "cmd_ln_brk",
+                       default  = 500,
+                       type     = int,
+                       help     = "Insert a line break after the specified " +
+                                  "column number\n(default: %(default)s)"
+)
+
+js_args   = parser.add_argument_group (
+    'Javascript compiler options',
+    'YUIcompressor'
+)
+
+js_args.add_argument ("--nomunge",
+                      dest     = "cmd_js_nomunge",
+                      action   = "store_true",
+                      default  = False,
+                      help     = "Minify only, do not obfuscate"
+)
+
+js_args.add_argument ("--preserve-semi",
+                      dest     = "cmd_js_preserve_semi",
+                      action   = "store_true",
+                      default  = False,
+                      help     = "Preserve all semicolons"
+)
+
+js_args.add_argument ("--disable-optimizations",
+                      dest     = "cmd_js_disable_optimizations",
+                      action   = "store_true",
+                      default  = False,
+                      help     = "Disable all micro optimizations"
 )
 
 args = parser.parse_args()
 
-infile  = args.infile		# get input file from command line argument
-outfile = args.outfile		# get output file from command line argument
+infile           = args.infile		# get input file from cmd line argument
+outfile          = args.outfile		# get output file from cmd line argument
+merge_css        = args.merge_css	# whether to merge css or not
+merge_css_import = args.merge_css	# whether to merge css @import  or not
+merge_js         = args.merge_js	# whether to merge javascript or not
+comp_html        = args.comp_html	# whether to compress html or not
+comp_js          = args.comp_js		# whether to compile javascript or not
+comp_css         = args.comp_css	# whether to compile stylesheets or not
+unlock_comments  = args.unlock_comments	# unlock css and js comments or not
+
+# yuicompressor options
+cmd_ln_brk                   = args.cmd_ln_brk	# line width for js compile
+cmd_js_nomunge               = args.cmd_js_nomunge
+cmd_js_preserve_semi         = args.cmd_js_preserve_semi
+cmd_js_disable_optimizations = args.cmd_js_disable_optimizations
+
+# is output file extension .gzip?
+gzip = (True
+        if os.path.splitext ( outfile )[-1] == ".gzip" or args.gzip
+        else False)
+
+path     = os.path.dirname(os.path.realpath(__file__))
+files    = sorted (os.listdir (path), key=str.lower)
+
+
+# get yuicompressor and google html compressor version
+yui_re   = re.compile (r"yuicompressor-(.+?)\.jar")
+ghc_re   = re.compile (r"htmlcompressor-(.+?)\.jar")
+
+yui_ver  = ""
+ghc_ver  = ""
+
+for f in files:
+    yui_ver_re = yui_re.findall (f)
+    yui_ver    = yui_ver_re[0] if len (yui_ver_re) > 0 else yui_ver
+    ghc_ver_re = ghc_re.findall (f)
+    ghc_ver    = ghc_ver_re[0] if len (ghc_ver_re) > 0 else ghc_ver
+
 
 # get logging level
 LOGLEVEL = args.LOGLEVEL
 
-if not LOGLEVEL in "debug,info,warning,error,quiet":
+if not LOGLEVEL in ("debug","info","warning","error","quiet"):
     warn (LOGLEVEL + " is not a valid logging level! Using default (info) ...")
     LOGLEVEL = "info"
 
@@ -142,169 +371,270 @@ debug ("Project will be merged to \"" + outfile + "\"!")
 debug ("Reading \"" + infile + "\" ...")
 
 # read input file to indexHTML
-try:
-    with open (infile,'r') as f:
-        indexHTML = f.read()
-except:
-    error ("Could not open \"" + infile + "\" !")
-    sys.exit(1)
-# end try
+if infile == "-":
+    # read from stdin if input file is -
+    print sys.stdin.read()
+else:
+    # read from input file
+    try:
+        with open (infile,'r') as f:
+            indexHTML = f.read()
+    except:
+        error ("Could not open \"" + infile + "\" !")
+        sys.exit(1)
+    # end try
+# end if
 
 debug ("Translating \"" + infile + "\" to python data structure ...")
 
 # translate indexHTML string to python data structure
 dom = BeautifulSoup ( indexHTML )
 
+if merge_js:
+    debug ("Searching for script tags in html ...")
 
-debug ("Searching for script tags in html ...")
+    # find all script tags in html
+    scripts = dom.findAll ('script')
 
-# find all script tags in html
-scripts = dom.findAll ('script')
+    # string containing merged scripts
+    all_scripts = ""
 
-# string containing merged scripts
-all_scripts = ""
+    # iterate over script tags
+    for tag in scripts:
+        # get src url of script tag
+        if tag.has_key ("src"):
+            # save source url to variable
+            src_url = tag['src']
+        else:
+            # append content of script tag to string
+            all_scripts += ''.join (tag.contents)
+            continue
+        # end if
 
-# iterate over script tags
-for tag in scripts:
-    # get src url of script tag
-    if tag.has_key ("src"):
-        src_url = tag['src']			# save source url to variable
-    else:
-        all_scripts += ''.join (tag.contents)	# append content of script tag
-        					# to string
-        continue
+        info ("Found external script: \"" + src_url + "\"")
+
+        # read src to src
+        try:
+            with open (src_url,'r') as f:
+                all_scripts += f.read()
+        except:
+            error ("Could not open \"" + src_url + "\" !")
+            sys.exit(1)
+        # end try
+
+        # remove src attribute
+        tag.extract()
+    # end for
+
+    if unlock_comments:
+        all_scripts = all_scripts.replace ("/*!","/*")
+
+    # compile javascript if requested
+    if comp_js:
+        info ("Compiling javascript ...")
+
+        # create command line
+        cmd = split (
+            "java -jar " +
+            os.path.dirname(os.path.realpath(__file__)) +
+            "/yuicompressor-" + yui_ver + ".jar"
+            " --type js --line-break " + cmd_ln_brk + " " +
+            ("--numunge " if cmd_js_nomunge else "") +
+            ("--preserve-semi " if cmd_js_preserve_semi else "") +
+            ("--disable-optimizations " if cmd_js_disable_optimizations else "")
+        )
+
+        # create process
+        process = Popen (cmd,
+                         stdin  = PIPE,
+                         stdout = PIPE
+        )
+
+        # get compiled javascript
+        all_scripts = process.communicate ( input = all_scripts )[0]
     # end if
 
-    info ("Found external script: \"" + src_url + "\"")
+    debug ("Creating new script tag ...")
 
-    # read src to src
-    try:
-        with open (src_url,'r') as f:
-            all_scripts += f.read()
-    except:
-        error ("Could not open \"" + src_url + "\" !")
-        sys.exit(1)
-    # end try
+    # create script tag for all scripts
+    scripts_tag = Tag (dom, "script")
 
-    # remove src attribute
-    tag.extract()
-# end for
+    # inset merged scripts into new script tag
+    scripts_tag.insert (0, all_scripts)
 
-debug ("Creating new script tag ...")
+    # get head tag
+    head = dom.find ('head')
 
-# create script tag for all scripts
-scripts_tag = Tag (dom, "script")
-
-# inset merged scripts into new script tag
-scripts_tag.insert (0, all_scripts)
-
-# get head tag
-head = dom.find ('head')
-
-# append scripts tag to head
-head.insert ( len (head.contents), scripts_tag )
+    # append scripts tag to head
+    head.insert ( len (head.contents), scripts_tag )
+# end if
 
 
-debug ("Searching for link tags in html ...")
+if merge_css:
+    debug ("Searching for link tags in html ...")
 
-# find all link tags in html
-links = dom.findAll ('link')
+    # find all link tags in html
+    links = dom.findAll ('link')
 
-# string containing merged stylesheets
-all_css = ""
+    # string containing merged stylesheets
+    all_css = ""
 
-# iterate over link tags
-for tag in links:
-    # get content of rel attribute
-    if tag.has_key ("rel"):
-        rel = tag['rel']
+    # iterate over link tags
+    for tag in links:
+        # get content of rel attribute
+        if tag.has_key ("rel"):
+            rel = tag['rel']
 
-        if rel == "stylesheet" and tag.has_key ("href"):
-            # get href url of link tag
-            src_url = tag['href']
+            if rel == "stylesheet" and tag.has_key ("href"):
+                # get href url of link tag
+                src_url = tag['href']
 
-            info ("Found external css   : \"" + src_url + "\"")
+                info ("Found external css   : \"" + src_url + "\"")
 
-            # read src to src
-            try:
-                with open (src_url,'r') as f:
-                    all_css += f.read()
-            except:
-                error ("Could not open \"" + src_url + "\" !")
-                sys.exit(1)
-            # end try
+                # read src to src
+                try:
+                    with open (src_url,'r') as f:
+                        all_css += f.read()
+                except:
+                    error ("Could not open \"" + src_url + "\" !")
+                    sys.exit(1)
+                # end try
 
-            # remove src attribute
-            tag.extract()
+                # remove src attribute
+                tag.extract()
+            else:
+                continue
         else:
             continue
-    else:
-        continue
-# end for
+    # end for
 
-debug ("Searching for style tags in html ...")
+    debug ("Searching for style tags in html ...")
 
-# find all style tags in html
-styles = dom.findAll ('style')
+    # find all style tags in html
+    styles = dom.findAll ('style')
 
-# iterate over style tags
-for tag in styles:
-    all_css += ''.join (tag.contents)
-# end for
+    # iterate over style tags
+    for tag in styles:
+        all_css += ''.join (tag.contents)
+    # end for
 
 
-# search for @import url(*);
-re_url = re.compile (r"@import\s+url\(['\"]?(.+?)['\"]?\);")
+    if merge_css_import:
+        # search for @import url(*);
+        re_url = re.compile (r"@import\s+url\(['\"]?(.+?)['\"]?\);")
 
-# while mergable @import exist
-while re_url.search (all_css):
-    all_css = all_css.split ("\n")
-    for line in all_css:
-        if len (re_url.findall (line)) > 0:
-            src_url = re_url.findall (line)[0]	# get src url
+        # while mergable @import exist
+        while re_url.search (all_css):
+            all_css = all_css.split ("\n")
+            for line in all_css:
+                if len (re_url.findall (line)) > 0:
+                    src_url = re_url.findall (line)[0]	# get src url
 
-            info ("Found external css   : \"" + src_url + "\"")
+                    info ("Found external css   : \"" + src_url + "\"")
 
-            idx = all_css.index (line)		# get @import index
-            all_css.pop (idx)			# remove @import
+                    idx = all_css.index (line)		# get @import index
+                    all_css.pop (idx)			# remove @import
 
-            # read src to src
-            try:
-                with open (src_url,'r') as f:
-                    # insert loaded css at old @import index
-                    all_css.insert (idx, f.read())
-            except:
-                error ("Could not open \"" + src_url + "\" !")
-                sys.exit(1)
-            # end try
-        # end if
-    all_css = '\n'.join (all_css)
-# end while
+                    # read src to src
+                    try:
+                        with open (src_url,'r') as f:
+                            # insert loaded css at old @import index
+                            all_css.insert (idx, f.read())
+                    except:
+                        error ("Could not open \"" + src_url + "\" !")
+                        sys.exit(1)
+                    # end try
+                # end if
+            # end for
+            all_css = '\n'.join (all_css)
+        # end while
+    # end if
 
+    if unlock_comments:
+        all_css = all_css.replace ("/*!","/*")
 
-debug ("Creating new style tag ...")
+    # compile stylesheets if requested
+    if comp_css:
+        info ("Compiling css ...")
 
-# create style tag for all css files
-style_tag = Tag (dom, "style")
+        # create command line
+        cmd = split (
+            "java -jar " +
+            os.path.dirname(os.path.realpath(__file__)) +
+            "/yuicompressor-" + yui_ver + ".jar"
+            " --type css --line-break " + cmd_ln_brk
+        )
 
-# inset merged css into new style tag
-style_tag.insert (0, all_css)
+        # create process
+        process = Popen (cmd,
+                         stdin  = PIPE,
+                         stdout = PIPE
+        )
 
-# get head tag
-head = dom.find ('head')
-# append scripts tag to head
-head.insert ( len (head.contents), style_tag )
+        # get compiled javascript
+        all_css = process.communicate ( input = all_css )[0]
+    # end if
 
+    debug ("Creating new style tag ...")
+
+    # create style tag for all css files
+    style_tag = Tag (dom, "style")
+
+    # inset merged css into new style tag
+    style_tag.insert (0, all_css)
+
+    # get head tag
+    head = dom.find ('head')
+    # append scripts tag to head
+    head.insert ( len (head.contents), style_tag )
+# end if
+
+all_html = dom.prettify ("utf-8")
+
+# compress html if requested
+if comp_html:
+    info ("Compressing html ...")
+
+    # create command line
+    cmd = split (
+        "java -jar " +
+        os.path.dirname(os.path.realpath(__file__)) +
+        "/htmlcompressor-" + ghc_ver + ".jar"
+    )
+
+    # create process
+    process = Popen (cmd,
+                     stdin  = PIPE,
+                     stdout = PIPE
+    )
+
+    # get compiled javascript
+    all_html = process.communicate ( input = all_html )[0]
+# end if
+
+# compress as gzip
+if gzip:
+    info ("Compressing html as " + outfile + " ...")
+
+    # create command line
+    cmd = split ("gzip - -f")
+
+    # create process
+    process = Popen (cmd, stdin = PIPE, stdout = PIPE)
+
+    # compress
+    all_html = process.communicate ( input = all_html )[0]
+# end if
 
 if outfile == "-":
-    info ("Piping merged html file ...")
-    print dom.prettify ("utf-8").replace ("/*!","/*")
+    info ("Piping merged data ...")
+    print all_html
 else:
-    info ("Writing merged html file to \"" + outfile + "\" ...")
+    info ("Writing merged data to \"" + outfile + "\" ...")
 
     try:
         with open (outfile,'w') as f:
-            f.write ( dom.prettify ("utf-8").replace ("/*!","/*") )
+            f.write ( all_html )
     except:
         error ("Failed to save \"" + outfile + "\" ! Do we have permission?")
         sys.exit(1)
