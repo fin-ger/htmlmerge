@@ -101,14 +101,14 @@ Required arguments:
 
 Optional arguments:
   -h, --help            Show this help message and exit
-  -m, --long-help       Show long help message and exit
+  -l, --long-help       Show long help message and exit
   -v, --version         Show program's version number and exit
-  -x, --compress-html   Compress html (Google htmlcompressor required)
-  -c, --compile-css     Compile stylesheets (YUIcompressor required)
-  -j, --compile-js      Compile javascript (YUIcompressor required)
-  -k, --no-css          Disable css merging
-  -r, --no-css-import   Disable css @import merging
-  -s, --no-js           Disable javascript merging
+  -H, --compress-html   Compress html (Google htmlcompressor required)
+  -C, --compile-css     Compile stylesheets (YUIcompressor required)
+  -J, --compile-js      Compile javascript (YUIcompressor required)
+  -c, --no-css          Disable css merging
+  -i, --no-css-import   Disable css @import merging
+  -j, --no-js           Disable javascript merging
   -u, --unlock-comments
                         Unlock comments in javascript and css
                         (e.g. /*! ... */ becomes /* ... */)
@@ -119,7 +119,7 @@ Optional arguments:
   -g, --gzip            Force a gziped output. The file extension does not
                         matter.
                         This is useful if you would like to pipe gziped output
-  -l VAL, --loglevel VAL
+  -L VAL, --loglevel VAL
                         Set logging level [quiet|error|warning|info|debug]
                         (default: info)
 
@@ -178,7 +178,7 @@ opt_args.add_argument ("-h", "--help",
                        help    = "Show short help message and exit"
 )
 
-opt_args.add_argument ("-m", "--long-help",
+opt_args.add_argument ("-l", "--long-help",
                        action  = "help",
                        help    = "Show this help message and exit"
 )
@@ -189,7 +189,7 @@ opt_args.add_argument ("-v", "--version",
                        help    = "Show program's version number and exit"
 )
 
-opt_args.add_argument ("-x", "--compress-html",
+opt_args.add_argument ("-H", "--compress-html",
                        dest    = "comp_html",
                        action  = "store_true",
                        default = False,
@@ -197,7 +197,7 @@ opt_args.add_argument ("-x", "--compress-html",
                                  "(Google htmlcompressor required)"
 )
 
-opt_args.add_argument ("-c", "--compile-css",
+opt_args.add_argument ("-C", "--compile-css",
                        dest    = "comp_css",
                        action  = "store_true",
                        default = False,
@@ -205,7 +205,7 @@ opt_args.add_argument ("-c", "--compile-css",
                                  "(YUIcompressor required)"
 )
 
-opt_args.add_argument ("-j", "--compile-js",
+opt_args.add_argument ("-J", "--compile-js",
                        dest    = "comp_js",
                        action  = "store_true",
                        default = False,
@@ -213,21 +213,21 @@ opt_args.add_argument ("-j", "--compile-js",
                                  "(YUIcompressor required)"
 )
 
-opt_args.add_argument ("-k", "--no-css",
+opt_args.add_argument ("-c", "--no-css",
                        dest    = "merge_css",
                        action  = "store_false",
                        default = True,
                        help    = "Disable css merging"
 )
 
-opt_args.add_argument ("-r", "--no-css-import",
+opt_args.add_argument ("-i", "--no-css-import",
                        dest    = "merge_css_import",
                        action  = "store_false",
                        default = True,
                        help    = "Disable css @import merging"
 )
 
-opt_args.add_argument ("-s", "--no-js",
+opt_args.add_argument ("-j", "--no-js",
                        dest    = "merge_js",
                        action  = "store_false",
                        default = True,
@@ -262,7 +262,7 @@ opt_args.add_argument ("-g", "--gzip",
                                  "gziped output"
 )
 
-opt_args.add_argument ("-l", "--loglevel",
+opt_args.add_argument ("-L", "--loglevel",
                        metavar = "VAL",
                        dest    = "LOGLEVEL",
                        default = "info",

@@ -28,7 +28,7 @@ e.g.
 Make sure `~/bin/` is in your `$PATH` variable.
 
 ### Usage ###
-    htmlmerge infile [options] [-h|--help]
+    Usage: htmlmerge infile [options] [-h|--help]
     
     Merge all linked css and javascript resources of an html file into one file
     
@@ -38,14 +38,14 @@ Make sure `~/bin/` is in your `$PATH` variable.
     
     Optional arguments:
       -h, --help            Show short help message and exit
-      -m, --long-help       Show this help message and exit
+      -l, --long-help       Show this help message and exit
       -v, --version         Show program's version number and exit
-      -x, --compress-html   Compress html (Google htmlcompressor required)
-      -c, --compile-css     Compile stylesheets (YUIcompressor required)
-      -j, --compile-js      Compile javascript (YUIcompressor required)
-      -k, --no-css          Disable css merging
-      -r, --no-css-import   Disable css @import merging
-      -s, --no-js           Disable javascript merging
+      -H, --compress-html   Compress html (Google htmlcompressor required)
+      -C, --compile-css     Compile stylesheets (YUIcompressor required)
+      -J, --compile-js      Compile javascript (YUIcompressor required)
+      -c, --no-css          Disable css merging
+      -i, --no-css-import   Disable css @import merging
+      -j, --no-js           Disable javascript merging
       -u, --unlock-comments
                             Unlock comments in javascript and css
                             (e.g. /*! ... */ becomes /* ... */)
@@ -56,7 +56,7 @@ Make sure `~/bin/` is in your `$PATH` variable.
       -g, --gzip            Force a gziped output. The file extension does not
                             matter.
                             This is useful if you would like to pipe gziped output
-      -l VAL, --loglevel VAL
+      -L VAL, --loglevel VAL
                             Set logging level [quiet|error|warning|info|debug]
                             (default: info)
     
