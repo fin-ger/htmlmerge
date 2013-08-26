@@ -9,9 +9,9 @@ single file.
 * `Python 3`
 * `BeautifulSoup v4` python library
 * (optional) Google
-  `[htmlcompressor](http://code.google.com/p/htmlcompressor/downloads/list)`
+  [`htmlcompressor`](http://code.google.com/p/htmlcompressor/downloads/list)
 * (optional) Yahoo
-  `[YUIcompressor](https://github.com/yui/yuicompressor/releases)`
+  [`YUIcompressor`](https://github.com/yui/yuicompressor/releases)
 
 This script was tested on `Gentoo Linux` with `Python 3.2.5` and
 `BeautifulSoup4`.
