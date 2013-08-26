@@ -100,8 +100,8 @@ Required arguments:
                         Use '-' to read piped output from another program
 
 Optional arguments:
-  -h, --help            Show short help message and exit
-  -m, --long-help       Show this help message and exit
+  -h, --help            Show this help message and exit
+  -m, --long-help       Show long help message and exit
   -v, --version         Show program's version number and exit
   -x, --compress-html   Compress html (Google htmlcompressor required)
   -c, --compile-css     Compile stylesheets (YUIcompressor required)
