@@ -101,7 +101,7 @@ Required arguments:
 
 Optional arguments:
   -h, --help            Show short help message and exit
-  --long-help           Show this help message and exit
+  -m, --long-help       Show this help message and exit
   -v, --version         Show program's version number and exit
   -x, --compress-html   Compress html (Google htmlcompressor required)
   -c, --compile-css     Compile stylesheets (YUIcompressor required)
@@ -178,7 +178,7 @@ opt_args.add_argument ("-h", "--help",
                        help    = "Show short help message and exit"
 )
 
-opt_args.add_argument ("--long-help",
+opt_args.add_argument ("-m", "--long-help",
                        action  = "help",
                        help    = "Show this help message and exit"
 )

@@ -35,7 +35,7 @@ Make sure `~/bin/` is in your `$PATH` variable.
     
     Optional arguments:
       -h, --help            Show short help message and exit
-      --long-help           Show this help message and exit
+      -m, --long-help       Show this help message and exit
       -v, --version         Show program's version number and exit
       -x, --compress-html   Compress html (Google htmlcompressor required)
       -c, --compile-css     Compile stylesheets (YUIcompressor required)
