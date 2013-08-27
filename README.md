@@ -6,7 +6,7 @@ Merge all linked _css_ and _javascript_ resources of an _html_ file into a
 single file.
 
 ### Intention ###
-The aim of this script is to decrease as much TCP connections as possible when
+The aim of this script is to decrease TCP connections as much as possible when
 loading a webpage. This is achieved by merging as much of your project files as
 possible into one single file. Additionally the HTML, CSS and JavaScript in this
 file could be compressed by the google htmlcompressor and the Yahoo
