@@ -109,7 +109,7 @@ output file. If there is no output file given the script will save to
 ### Todo ###
 * convert small graphics to base64 string
 * concatenate bigger graphics to one big image
-* possibility to compile javascript google-closure-compiler
+* possibility to compile javascript with Googles closure compiler
 * possibility to merge `@import`'s with a media query
 * possibility to keep merged sources in single tags
 * possibility to pass arguments to htmlcompressor
