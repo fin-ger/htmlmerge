@@ -5,6 +5,15 @@ __HTML, CSS and Javascript merging tool__
 Merge all linked _css_ and _javascript_ resources of an _html_ file into a
 single file.
 
+### Intention ###
+The aim of this script is to decrease as much TCP connections as possible when
+loading a webpage. This is achieved by merging as much of your project files as
+possible into one single file. Additionally the HTML, CSS and JavaScript in this
+file could be compressed by the google htmlcompressor and the Yahoo
+YUIcompressor. By that the charging time of the website is significantly
+reduced. This is especially interesting for mobile devices.
+
+
 ### Requirements ###
 * `Python 3`
 * `BeautifulSoup v4` python library
@@ -99,6 +108,7 @@ output file. If there is no output file given the script will save to
 
 ### Todo ###
 * convert small graphics to base64 string
+* concatenate bigger graphics to one big image
 * possibility to compile javascript google-closure-compiler
 * possibility to merge `@import`'s with a media query
 * possibility to keep merged sources in single tags
