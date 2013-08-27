@@ -77,8 +77,8 @@ Make sure `~/bin/` is in your `$PATH` variable.
     
     Examples:
       htmlmerge index.html
-      htmlmerge index.html -x -c -j -o build/out.html -u
-      htmlmerge index.html -x --loglevel quiet -k -r -s
+      htmlmerge index.html -H -C -J -o build/out.html -u
+      htmlmerge index.html -H --loglevel quiet -c -i -j
     
     For CSS or JavaScript compression, additional YUIcompressor jar file must be
     present in the same directory as this script.
