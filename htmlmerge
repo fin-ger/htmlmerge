@@ -102,7 +102,7 @@ Required arguments:
 Optional arguments:
   -h, --help            Show this help message and exit
   -l, --long-help       Show long help message and exit
-  -v, --version         Show program's version number and exit
+  -V, --version         Show program's version number and exit
   -H, --compress-html   Compress html (Google htmlcompressor required)
   -C, --compile-css     Compile stylesheets (YUIcompressor required)
   -J, --compile-js      Compile javascript (YUIcompressor required)
@@ -183,7 +183,7 @@ opt_args.add_argument ("-l", "--long-help",
                        help    = "Show this help message and exit"
 )
 
-opt_args.add_argument ("-v", "--version",
+opt_args.add_argument ("-V", "--version",
                        version = "%(prog)s v" + __version__,
                        action  = "version",
                        help    = "Show program's version number and exit"
